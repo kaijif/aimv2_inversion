@@ -1,0 +1,4 @@
+cache/*
+checkpoints/*
+.DS_Store
+results/eval/*

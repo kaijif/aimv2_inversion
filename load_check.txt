@@ -1,0 +1,6 @@
+torch 2.6.0+cu124 | transformers 4.57.6
+OK  apple/aimv2-large-patch14-224  (309M params)
+OK  openai/clip-vit-large-patch14  (303M params)
+OK  google/siglip-large-patch16-256  (316M params)
+OK  facebook/dinov2-large  (304M params)
+OK  facebook/vit-mae-large  (303M params)

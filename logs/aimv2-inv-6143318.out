@@ -1,0 +1,205 @@
+Thu Oct 22 00:11:52 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 595.58.03              Driver Version: 595.58.03      CUDA Version: 13.2     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-PCIE-40GB          On  |   00000000:27:00.0 Off |                    0 |
+| N/A   38C    P0             38W /  250W |       0MiB /  40960MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+[NbConvertApp] Converting notebook aimv2_feature_inversion.ipynb to notebook
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+Traceback (most recent call last):
+  File "/work/users/k/a/kaiji/envs/fi/bin/jupyter-nbconvert", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/jupyter_core/application.py", line 284, in launch_instance
+    super().launch_instance(argv=argv, **kwargs)
+  File "/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/traitlets/config/application.py", line 1080, in launch_instance
+    app.start()
+  File "/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/nbconvert/nbconvertapp.py", line 420, in start
+    self.convert_notebooks()
+  File "/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/nbconvert/nbconvertapp.py", line 597, in convert_notebooks
+    self.convert_single_notebook(notebook_filename)
+  File "/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/nbconvert/nbconvertapp.py", line 563, in convert_single_notebook
+    output, resources = self.export_single_notebook(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/nbconvert/nbconvertapp.py", line 487, in export_single_notebook
+    output, resources = self.exporter.from_filename(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/nbconvert/exporters/exporter.py", line 201, in from_filename
+    return self.from_file(f, resources=resources, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/nbconvert/exporters/exporter.py", line 220, in from_file
+    return self.from_notebook_node(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/nbconvert/exporters/notebook.py", line 36, in from_notebook_node
+    nb_copy, resources = super().from_notebook_node(nb, resources, **kw)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/nbconvert/exporters/exporter.py", line 154, in from_notebook_node
+    nb_copy, resources = self._preprocess(nb_copy, resources)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/nbconvert/exporters/exporter.py", line 353, in _preprocess
+    nbc, resc = preprocessor(nbc, resc)
+                ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/nbconvert/preprocessors/base.py", line 48, in __call__
+    return self.preprocess(nb, resources)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/nbconvert/preprocessors/execute.py", line 103, in preprocess
+    self.preprocess_cell(cell, resources, index)
+  File "/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/nbconvert/preprocessors/execute.py", line 124, in preprocess_cell
+    cell = self.execute_cell(cell, index, store_history=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/users/k/a/kaiji/envs/fi/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+@torch.no_grad()
+def check_token_order(enc, x01, n_probe=8, seed=0):
+    G, p = enc.grid, enc.patch_size
+    base = enc(x01)
+    rng = np.random.default_rng(seed)
+    probes = [(0, G - 1), (G - 1, 0), (1, G // 2)]
+    while len(probes) < n_probe:
+        r, c = map(int, rng.integers(0, G, 2))
+        if r != c: probes.append((r, c))
+    row_major = col_major = 0
+    for r, c in probes:
+        x2 = x01.clone()
+        x2[..., r * p:(r + 1) * p, c * p:(c + 1) * p] = 1.0 - x2[..., r * p:(r + 1) * p, c * p:(c + 1) * p]
+        delta = (enc(x2) - base).norm(dim=-1).mean(0)
+        k = int(delta.argmax())
+        row_major += k == r * G + c
+        col_major += k == c * G + r
+    return dict(encoder=enc.name, grid=G, probes=len(probes), row_major_hits=row_major, col_major_hits=col_major,
+                verdict="raster (row-major)" if row_major == len(probes) else "CHECK MANUALLY")
+
+probe_x = torch.stack([make_dataset("select")[i][0] for i in range(4)])
+order_rows = []
+for name in CFG["encoders"]:
+    if name == "floor_zeros":
+        continue
+    enc = build_encoder(name)
+    order_rows.append(check_token_order(enc, to_unit(probe_x)))
+    del enc; free_memory()
+order_df = pd.DataFrame(order_rows)
+order_df.to_csv(OUT / "token_order_check.csv", index=False)
+order_df
+------------------
+
+----- stderr -----
+/tmp/kaiji/6143318/g141602.ll.unc.edu/ipykernel_986857/3605648369.py:137: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at ../torch/csrc/utils/tensor_numpy.cpp:206.)
+  x = torch.from_numpy(np.ascontiguousarray(self._arr[i]))
+----- stdout -----
+[aimv2] loaded via native: Aimv2VisionModel
+------------------
+
+[31m---------------------------------------------------------------------------[39m
+[31mValueError[39m                                Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[5][39m[32m, line 26[39m
+[32m     22[39m order_rows = []
+[32m     23[39m [38;5;28;01mfor[39;00m name [38;5;28;01min[39;00m CFG[[33m"encoders"[39m]:
+[32m     24[39m     [38;5;28;01mif[39;00m name == [33m"floor_zeros"[39m:
+[32m     25[39m         [38;5;28;01mcontinue[39;00m
+[32m---> [39m[32m26[39m     enc = build_encoder(name)
+[32m     27[39m     order_rows.append(check_token_order(enc, to_unit(probe_x)))
+[32m     28[39m     [38;5;28;01mdel[39;00m enc; free_memory()
+[32m     29[39m order_df = pd.DataFrame(order_rows)
+
+[36mCell[39m[36m [39m[32mIn[4][39m[32m, line 144[39m, in [36mbuild_encoder[39m[34m(name)[39m
+[32m    143[39m [38;5;28;01mdef[39;00m build_encoder(name):
+[32m--> [39m[32m144[39m     [38;5;28;01mreturn[39;00m ENCODER_BUILDERS[name]().to(DEVICE)
+
+[36mCell[39m[36m [39m[32mIn[4][39m[32m, line 120[39m, in [36mbuild_mae[39m[34m()[39m
+[32m    117[39m [38;5;28;01mdef[39;00m build_mae():
+[32m    118[39m     [38;5;28;01mfrom[39;00m transformers [38;5;28;01mimport[39;00m ViTMAEModel
+[32m    119[39m     hf_id = [33m"facebook/vit-mae-large"[39m
+[32m--> [39m[32m120[39m     m, info = ViTMAEModel.from_pretrained(hf_id, mask_ratio=[32m0.0[39m, output_loading_info=[38;5;28;01mTrue[39;00m); _check_loading([33m"mae"[39m, info)
+[32m    121[39m     [38;5;28;01mdef[39;00m call(m, x):
+[32m    122[39m         B, N = x.shape[[32m0[39m], (x.shape[-[32m1[39m] // [32m16[39m) ** [32m2[39m
+[32m    123[39m         noise = torch.arange(N, device=x.device, dtype=torch.float32).expand(B, N)  [38;5;66;03m# argsort -> identity[39;00m
+
+[36mFile [39m[32m/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/transformers/modeling_utils.py:277[39m, in [36mrestore_default_dtype.<locals>._wrapper[39m[34m(*args, **kwargs)[39m
+[32m    275[39m old_dtype = torch.get_default_dtype()
+[32m    276[39m [38;5;28;01mtry[39;00m:
+[32m--> [39m[32m277[39m     [38;5;28;01mreturn[39;00m [30;43mfunc[39;49m[30;43m([39;49m[30;43m*[39;49m[30;43margs[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mkwargs[39;49m[30;43m)[39;49m
+[32m    278[39m [38;5;28;01mfinally[39;00m:
+[32m    279[39m     torch.set_default_dtype(old_dtype)
+
+[36mFile [39m[32m/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/transformers/modeling_utils.py:5048[39m, in [36mPreTrainedModel.from_pretrained[39m[34m(cls, pretrained_model_name_or_path, config, cache_dir, ignore_mismatched_sizes, force_download, local_files_only, token, revision, use_safetensors, weights_only, *model_args, **kwargs)[39m
+[32m   5038[39m     [38;5;28;01mif[39;00m dtype_orig [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m:
+[32m   5039[39m         torch.set_default_dtype(dtype_orig)
+[32m   5041[39m     (
+[32m   5042[39m         model,
+[32m   5043[39m         missing_keys,
+[32m   5044[39m         unexpected_keys,
+[32m   5045[39m         mismatched_keys,
+[32m   5046[39m         offload_index,
+[32m   5047[39m         error_msgs,
+[32m-> [39m[32m5048[39m     ) = [30;43mcls[39;49m[30;43m.[39;49m[30;43m_load_pretrained_model[39;49m[30;43m([39;49m
+[32m   5049[39m [30;43m        [39;49m[30;43mmodel[39;49m[30;43m,[39;49m
+[32m   5050[39m [30;43m        [39;49m[30;43mstate_dict[39;49m[30;43m,[39;49m
+[32m   5051[39m [30;43m        [39;49m[30;43mcheckpoint_files[39;49m[30;43m,[39;49m
+[32m   5052[39m [30;43m        [39;49m[30;43mpretrained_model_name_or_path[39;49m[30;43m,[39;49m
+[32m   5053[39m [30;43m        [39;49m[30;43mignore_mismatched_sizes[39;49m[30;43m=[39;49m[30;43mignore_mismatched_sizes[39;49m[30;43m,[39;49m
+[32m   5054[39m [30;43m        [39;49m[30;43msharded_metadata[39;49m[30;43m=[39;49m[30;43msharded_metadata[39;49m[30;43m,[39;49m
+[32m   5055[39m [30;43m        [39;49m[30;43mdevice_map[39;49m[30;43m=[39;49m[30;43mdevice_map[39;49m[30;43m,[39;49m
+[32m   5056[39m [30;43m        [39;49m[30;43mdisk_offload_folder[39;49m[30;43m=[39;49m[30;43moffload_folder[39;49m[30;43m,[39;49m
+[32m   5057[39m [30;43m        [39;49m[30;43mdtype[39;49m[30;43m=[39;49m[30;43mdtype[39;49m[30;43m,[39;49m
+[32m   5058[39m [30;43m        [39;49m[30;43mhf_quantizer[39;49m[30;43m=[39;49m[30;43mhf_quantizer[39;49m[30;43m,[39;49m
+[32m   5059[39m [30;43m        [39;49m[30;43mkeep_in_fp32_regex[39;49m[30;43m=[39;49m[30;43mkeep_in_fp32_regex[39;49m[30;43m,[39;49m
+[32m   5060[39m [30;43m        [39;49m[30;43mdevice_mesh[39;49m[30;43m=[39;49m[30;43mdevice_mesh[39;49m[30;43m,[39;49m
+[32m   5061[39m [30;43m        [39;49m[30;43mkey_mapping[39;49m[30;43m=[39;49m[30;43mkey_mapping[39;49m[30;43m,[39;49m
+[32m   5062[39m [30;43m        [39;49m[30;43mweights_only[39;49m[30;43m=[39;49m[30;43mweights_only[39;49m[30;43m,[39;49m
+[32m   5063[39m [30;43m    [39;49m[30;43m)[39;49m
+[32m   5064[39m [38;5;66;03m# make sure token embedding weights are still tied if needed[39;00m
+[32m   5065[39m model.tie_weights()
+
+[36mFile [39m[32m/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/transformers/modeling_utils.py:5316[39m, in [36mPreTrainedModel._load_pretrained_model[39m[34m(cls, model, state_dict, checkpoint_files, pretrained_model_name_or_path, ignore_mismatched_sizes, sharded_metadata, device_map, disk_offload_folder, dtype, hf_quantizer, keep_in_fp32_regex, device_mesh, key_mapping, weights_only)[39m
+[32m   5313[39m     original_checkpoint_keys = [38;5;28mlist[39m(state_dict.keys())
+[32m   5314[39m [38;5;28;01melse[39;00m:
+[32m   5315[39m     original_checkpoint_keys = [38;5;28mlist[39m(
+[32m-> [39m[32m5316[39m         [30;43mload_state_dict[39;49m[30;43m([39;49m[30;43mcheckpoint_files[39;49m[30;43m[[39;49m[30;43m0[39;49m[30;43m][39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mmap_location[39;49m[30;43m=[39;49m[30;43m"[39;49m[30;43mmeta[39;49m[30;43m"[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mweights_only[39;49m[30;43m=[39;49m[30;43mweights_only[39;49m[30;43m)[39;49m.keys()
+[32m   5317[39m     )
+[32m   5319[39m [38;5;66;03m# Check if we are in a special state, i.e. loading from a state dict coming from a different architecture[39;00m
+[32m   5320[39m prefix = model.base_model_prefix
+
+[36mFile [39m[32m/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/transformers/modeling_utils.py:508[39m, in [36mload_state_dict[39m[34m(checkpoint_file, is_quantized, map_location, weights_only)[39m
+[32m    506[39m [38;5;66;03m# Fallback to torch.load (if weights_only was explicitly False, do not check safety as this is known to be unsafe)[39;00m
+[32m    507[39m [38;5;28;01mif[39;00m weights_only:
+[32m--> [39m[32m508[39m     [30;43mcheck_torch_load_is_safe[39;49m[30;43m([39;49m[30;43m)[39;49m
+[32m    509[39m [38;5;28;01mtry[39;00m:
+[32m    510[39m     [38;5;28;01mif[39;00m map_location [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m:
+
+[36mFile [39m[32m/work/users/k/a/kaiji/envs/fi/lib/python3.11/site-packages/transformers/utils/import_utils.py:1647[39m, in [36mcheck_torch_load_is_safe[39m[34m()[39m
+[32m   1645[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34mcheck_torch_load_is_safe[39m() -> [38;5;28;01mNone[39;00m:
+[32m   1646[39m     [38;5;28;01mif[39;00m [38;5;129;01mnot[39;00m is_torch_greater_or_equal([33m"[39m[33m2.6[39m[33m"[39m):
+[32m-> [39m[32m1647[39m         [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m(
+[32m   1648[39m             [33m"[39m[33mDue to a serious vulnerability issue in `torch.load`, even with `weights_only=True`, we now require users [39m[33m"[39m
+[32m   1649[39m             [33m"[39m[33mto upgrade torch to at least v2.6 in order to use the function. This version restriction does not apply [39m[33m"[39m
+[32m   1650[39m             [33m"[39m[33mwhen loading files with safetensors.[39m[33m"[39m
+[32m   1651[39m             [33m"[39m[38;5;130;01m\n[39;00m[33mSee the vulnerability report here https://nvd.nist.gov/vuln/detail/CVE-2025-32434[39m[33m"[39m
+[32m   1652[39m         )
+
+[31mValueError[39m: Due to a serious vulnerability issue in `torch.load`, even with `weights_only=True`, we now require users to upgrade torch to at least v2.6 in order to use the function. This version restriction does not apply when loading files with safetensors.
+See the vulnerability report here https://nvd.nist.gov/vuln/detail/CVE-2025-32434
+

@@ -1,0 +1,8 @@
+other,mse,psnr,ssim,lpips,sem
+clip_s0,"-0.0091 [-0.0092, -0.0090]  AIMv2 better","3.01 [2.99, 3.04]  AIMv2 better","0.1431 [0.1420, 0.1441]  AIMv2 better","-0.1932 [-0.1942, -0.1922]  AIMv2 better","0.2485 [0.2460, 0.2509]  AIMv2 better"
+siglip_s0,"-0.0140 [-0.0142, -0.0138]  AIMv2 better","4.10 [4.07, 4.13]  AIMv2 better","0.1861 [0.1850, 0.1873]  AIMv2 better","-0.2547 [-0.2559, -0.2536]  AIMv2 better","0.3480 [0.3454, 0.3505]  AIMv2 better"
+dinov2_s0,"-0.0087 [-0.0088, -0.0086]  AIMv2 better","3.04 [3.01, 3.08]  AIMv2 better","0.1445 [0.1435, 0.1455]  AIMv2 better","-0.2049 [-0.2060, -0.2040]  AIMv2 better","0.2524 [0.2500, 0.2548]  AIMv2 better"
+mae_s0,"0.0072 [0.0071, 0.0072]  AIMv2 worse","-6.86 [-6.90, -6.82]  AIMv2 worse","-0.2379 [-0.2393, -0.2364]  AIMv2 worse","0.2657 [0.2644, 0.2669]  AIMv2 worse","-0.3058 [-0.3087, -0.3028]  AIMv2 worse"
+aimv2_random_s0,"0.0065 [0.0064, 0.0066]  AIMv2 worse","-5.05 [-5.09, -5.00]  AIMv2 worse","-0.2547 [-0.2572, -0.2520]  AIMv2 worse","0.2906 [0.2883, 0.2927]  AIMv2 worse","-0.3500 [-0.3528, -0.3473]  AIMv2 worse"
+floor_zeros_s0,"-0.0645 [-0.0652, -0.0638]  AIMv2 better","9.21 [9.16, 9.27]  AIMv2 better","0.2601 [0.2585, 0.2618]  AIMv2 better","-0.5744 [-0.5760, -0.5727]  AIMv2 better","0.4308 [0.4279, 0.4336]  AIMv2 better"
+ceiling_pixels_s0,"0.0094 [0.0093, 0.0095]  AIMv2 worse","-25.87 [-25.96, -25.79]  AIMv2 worse","-0.4090 [-0.4117, -0.4061]  AIMv2 worse","0.3844 [0.3822, 0.3865]  AIMv2 worse","-0.5273 [-0.5302, -0.5244]  AIMv2 worse"

@@ -1,0 +1,138 @@
+Sun Nov  8 03:53:47 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 595.58.03              Driver Version: 595.58.03      CUDA Version: 13.2     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-PCIE-40GB          On  |   00000000:27:00.0 Off |                    0 |
+| N/A   32C    P0             33W /  250W |       0MiB /  40960MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+
+===== cell 1: import os, json, math, time, random, gc, copy  [0.0 min elapsed]
+cuda 2.6.0+cu124 NVIDIA A100-PCIE-40GB
+outputs: /work/users/k/a/kaiji/aimv2_inversion/results | HF cache: /work/users/k/a/kaiji/hf_cache | workers: 15
+
+===== cell 2: IMG_EXTS = {".jpeg", ".jpg", ".png"}  [0.4 min elapsed]
+found several ImageNet copies, using the first:
+  /datacommons/ImageNet/ImageNet1k/extracted/ILSVRC/Data/CLS-LOC
+  /datacommons/ImageNet/ImageNet1k/extracted/ILSVRC/Annotations/CLS-LOC
+train: /datacommons/ImageNet/ImageNet1k/extracted/ILSVRC/Data/CLS-LOC/train 
+val:   /datacommons/ImageNet/ImageNet1k/extracted/ILSVRC/Data/CLS-LOC/val
+{'train': 50000, 'eval': 10000, 'select': 2000}
+
+===== cell 3: from transformers import AutoModel, AutoImageProcessor  [0.4 min elapsed]
+
+===== cell 4: @torch.no_grad()  [0.6 min elapsed]
+aimv2_feature_inversion.ipynb [cell 2]:137: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:203.)
+[aimv2] loaded via native: Aimv2VisionModel
+[aimv2] loaded via native: Aimv2VisionModel
+          encoder  grid  probes  row_major_hits  col_major_hits             verdict
+0           aimv2    16       8               5               0      CHECK MANUALLY
+1            clip    16       8               8               0  raster (row-major)
+2          siglip    14       8               8               0  raster (row-major)
+3          dinov2    16       8               8               0  raster (row-major)
+4             mae    14       8               8               0  raster (row-major)
+5    aimv2_random    16       8               8               0  raster (row-major)
+6  ceiling_pixels    16       8               8               0  raster (row-major)
+
+===== cell 5: class Attention(nn.Module):  [1.2 min elapsed]
+decoder params (D=1024, p=14): 19.9M
+
+===== cell 6: def run_name(enc_name, seed): return f"{enc_name}_s{seed}"  [1.2 min elapsed]
+
+===== cell 7: RUNS = [(e, CFG["seed"]) for e in CFG["encoders"]]  [1.2 min elapsed]
+[aimv2_s0] finished, skipping
+[clip_s0] finished, skipping
+[siglip_s0] finished, skipping
+[dinov2_s0] finished, skipping
+[mae_s0] finished, skipping
+[aimv2_random_s0] finished, skipping
+[floor_zeros_s0] finished, skipping
+[ceiling_pixels_s0] finished, skipping
+[aimv2_s1] finished, skipping
+[aimv2_s2] finished, skipping
+[clip_s1] finished, skipping
+[clip_s2] finished, skipping
+
+===== cell 8: def plot_curves(names):  [1.2 min elapsed]
+
+===== cell 9: from torchmetrics.functional import structural_similarity_index_measur  [1.2 min elapsed]
+
+===== cell 10: METRICS = ["mse", "psnr", "ssim", "lpips"] + (["sem"] if CFG["semantic  [1.3 min elapsed]
+LPIPS net: alex   |   mean [95% bootstrap CI] over 10000 eval images
+                 run                      mse                  psnr                     ssim                    lpips                      sem
+0  ceiling_pixels_s0  0.0000 [0.0000, 0.0000]  46.88 [46.78, 46.98]  0.9942 [0.9941, 0.9943]  0.0002 [0.0002, 0.0002]  0.9988 [0.9988, 0.9989]
+1             mae_s0  0.0023 [0.0022, 0.0023]  27.87 [27.80, 27.94]  0.8231 [0.8215, 0.8247]  0.1190 [0.1178, 0.1202]  0.7773 [0.7751, 0.7796]
+2    aimv2_random_s0  0.0029 [0.0029, 0.0030]  26.06 [26.01, 26.10]  0.8399 [0.8389, 0.8408]  0.0940 [0.0935, 0.0946]  0.8215 [0.8198, 0.8232]
+3           aimv2_s0  0.0094 [0.0093, 0.0096]  21.01 [20.95, 21.06]  0.5852 [0.5825, 0.5881]  0.3846 [0.3824, 0.3867]  0.4716 [0.4687, 0.4744]
+4          dinov2_s0  0.0182 [0.0180, 0.0184]  17.96 [17.92, 18.01]  0.4407 [0.4376, 0.4441]  0.5896 [0.5870, 0.5920]  0.2191 [0.2166, 0.2217]
+5            clip_s0  0.0186 [0.0183, 0.0188]  17.99 [17.94, 18.04]  0.4421 [0.4390, 0.4456]  0.5778 [0.5752, 0.5801]  0.2231 [0.2206, 0.2256]
+6          siglip_s0  0.0235 [0.0232, 0.0237]  16.90 [16.86, 16.95]  0.3991 [0.3961, 0.4025]  0.6393 [0.6370, 0.6416]  0.1235 [0.1221, 0.1253]
+7     floor_zeros_s0  0.0739 [0.0732, 0.0746]  11.79 [11.75, 11.83]  0.3250 [0.3220, 0.3280]  0.9590 [0.9576, 0.9604]  0.0408 [0.0402, 0.0414]
+
+===== cell 11: def paired_diff_ci(a, b, n_boot=None, seed=0):  [1.4 min elapsed]
+               other                                       mse                                  psnr                                     ssim                                     lpips                                      sem
+0            clip_s0  -0.0091 [-0.0092, -0.0090]  AIMv2 better       3.01 [2.99, 3.04]  AIMv2 better    0.1431 [0.1420, 0.1441]  AIMv2 better  -0.1932 [-0.1942, -0.1922]  AIMv2 better    0.2485 [0.2460, 0.2509]  AIMv2 better
+1          siglip_s0  -0.0140 [-0.0142, -0.0138]  AIMv2 better       4.10 [4.07, 4.13]  AIMv2 better    0.1861 [0.1850, 0.1873]  AIMv2 better  -0.2547 [-0.2559, -0.2536]  AIMv2 better    0.3480 [0.3454, 0.3505]  AIMv2 better
+2          dinov2_s0  -0.0087 [-0.0088, -0.0086]  AIMv2 better       3.04 [3.01, 3.08]  AIMv2 better    0.1445 [0.1435, 0.1455]  AIMv2 better  -0.2049 [-0.2060, -0.2040]  AIMv2 better    0.2524 [0.2500, 0.2548]  AIMv2 better
+3             mae_s0      0.0072 [0.0071, 0.0072]  AIMv2 worse     -6.86 [-6.90, -6.82]  AIMv2 worse  -0.2379 [-0.2393, -0.2364]  AIMv2 worse      0.2657 [0.2644, 0.2669]  AIMv2 worse  -0.3058 [-0.3087, -0.3028]  AIMv2 worse
+4    aimv2_random_s0      0.0065 [0.0064, 0.0066]  AIMv2 worse     -5.05 [-5.09, -5.00]  AIMv2 worse  -0.2547 [-0.2572, -0.2520]  AIMv2 worse      0.2906 [0.2883, 0.2927]  AIMv2 worse  -0.3500 [-0.3528, -0.3473]  AIMv2 worse
+5     floor_zeros_s0  -0.0645 [-0.0652, -0.0638]  AIMv2 better       9.21 [9.16, 9.27]  AIMv2 better    0.2601 [0.2585, 0.2618]  AIMv2 better  -0.5744 [-0.5760, -0.5727]  AIMv2 better    0.4308 [0.4279, 0.4336]  AIMv2 better
+6  ceiling_pixels_s0      0.0094 [0.0093, 0.0095]  AIMv2 worse  -25.87 [-25.96, -25.79]  AIMv2 worse  -0.4090 [-0.4117, -0.4061]  AIMv2 worse      0.3844 [0.3822, 0.3865]  AIMv2 worse  -0.5273 [-0.5302, -0.5244]  AIMv2 worse
+
+===== cell 12: seed_rows = []  [1.4 min elapsed]
+  encoder  n_seeds              mse              psnr             ssim            lpips              sem
+0   aimv2        3  0.0095 ± 0.0000  20.9924 ± 0.0230  0.5844 ± 0.0008  0.3876 ± 0.0026  0.4701 ± 0.0016
+1    clip        3  0.0190 ± 0.0004  17.8672 ± 0.1098  0.4335 ± 0.0075  0.5685 ± 0.0080  0.1898 ± 0.0290
+
+===== cell 13: def norm_map(M): return M / M.mean()  [1.4 min elapsed]
+                 run                row_slope                col_slope             raster_slope     aimv2_minus_this_row     aimv2_minus_this_col  aimv2_minus_this_raster  corr_with_aimv2_map
+0           aimv2_s0     0.040 [0.020, 0.059]  -0.103 [-0.116, -0.089]     0.036 [0.014, 0.056]                      NaN                      NaN                      NaN                  NaN
+1            clip_s0  -0.025 [-0.043, -0.006]   -0.008 [-0.021, 0.005]  -0.027 [-0.046, -0.007]     0.065 [0.053, 0.078]  -0.095 [-0.104, -0.085]     0.063 [0.050, 0.076]             0.314944
+2          siglip_s0   -0.002 [-0.019, 0.015]     0.020 [0.008, 0.033]   -0.001 [-0.019, 0.017]     0.043 [0.030, 0.056]  -0.123 [-0.134, -0.111]     0.037 [0.023, 0.052]             0.330451
+3          dinov2_s0  -0.027 [-0.043, -0.011]   -0.001 [-0.013, 0.010]  -0.029 [-0.045, -0.012]     0.067 [0.055, 0.080]  -0.102 [-0.112, -0.092]     0.065 [0.051, 0.078]             0.293130
+4             mae_s0     0.109 [0.083, 0.133]   -0.000 [-0.015, 0.015]     0.116 [0.088, 0.141]  -0.069 [-0.083, -0.054]  -0.102 [-0.112, -0.091]  -0.080 [-0.095, -0.065]             0.367254
+5    aimv2_random_s0  -0.045 [-0.069, -0.023]   -0.004 [-0.020, 0.011]  -0.048 [-0.072, -0.024]     0.085 [0.064, 0.108]  -0.099 [-0.114, -0.082]     0.084 [0.061, 0.108]             0.341701
+6     floor_zeros_s0  -0.158 [-0.173, -0.143]    0.002 [-0.008, 0.013]  -0.167 [-0.183, -0.152]     0.198 [0.174, 0.222]  -0.105 [-0.122, -0.087]     0.203 [0.178, 0.229]            -0.178605
+7  ceiling_pixels_s0     0.094 [0.061, 0.128]   -0.003 [-0.027, 0.019]     0.100 [0.065, 0.135]  -0.054 [-0.083, -0.025]  -0.099 [-0.121, -0.075]  -0.064 [-0.095, -0.033]             0.222042
+
+===== cell 14: def plot_heatmaps(maps, title, fname):  [1.6 min elapsed]
+
+===== cell 15: flip_rows = []  [1.7 min elapsed]
+                 run  corr_token  corr_content  self_symmetry  row_slope_orig  row_slope_vflip  raster_slope_orig  raster_slope_vflip                        reading
+0           aimv2_s0       0.973         0.887          0.841           0.040            0.019              0.036               0.014  map ~symmetric: uninformative
+1            clip_s0       0.968         0.988          0.955          -0.025           -0.011             -0.027              -0.012  map ~symmetric: uninformative
+2          siglip_s0       0.948         0.981          0.940          -0.002            0.022             -0.001               0.024  map ~symmetric: uninformative
+3          dinov2_s0       0.954         0.994          0.944          -0.027            0.009             -0.029               0.010  map ~symmetric: uninformative
+4             mae_s0       0.834         1.000          0.834           0.109           -0.106              0.116              -0.113  map ~symmetric: uninformative
+5    aimv2_random_s0       0.299         0.869          0.537          -0.045            0.075             -0.048               0.079                   content-tied
+6     floor_zeros_s0       0.140         0.972         -0.036          -0.158            0.127             -0.167               0.134                   content-tied
+7  ceiling_pixels_s0       0.694         1.000          0.695           0.094           -0.094              0.100              -0.099                   content-tied
+
+===== cell 16: def recon_grid(names, n_show=None, fname="recon_grid.png"):  [1.7 min elapsed]
+
+===== cell 17: def h1_summary():  [1.9 min elapsed]
+H1 (CLIP/SigLIP < AIMv2 < MAE):
+  mse    AIMv2 vs {'clip': 'better', 'siglip': 'better', 'mae': 'worse'}  ->  consistent with H1
+  lpips  AIMv2 vs {'clip': 'better', 'siglip': 'better', 'mae': 'worse'}  ->  consistent with H1
+  psnr   AIMv2 vs {'clip': 'better', 'siglip': 'better', 'mae': 'worse'}  ->  consistent with H1
+  ssim   AIMv2 vs {'clip': 'better', 'siglip': 'better', 'mae': 'worse'}  ->  consistent with H1
+
+H2 (AIMv2-specific positional error pattern):
+  row    AIMv2 slope +0.040 [+0.020, +0.059];  vs others: clip: ≠, siglip: ≠, dinov2: ≠, mae: ≠, aimv2_random: ≠
+  col    AIMv2 slope -0.103 [-0.116, -0.089];  vs others: clip: ≠, siglip: ≠, dinov2: ≠, mae: ≠, aimv2_random: ≠
+  raster AIMv2 slope +0.036 [+0.014, +0.056];  vs others: clip: ≠, siglip: ≠, dinov2: ≠, mae: ≠, aimv2_random: ≠
+  flip control: corr_token=0.97, corr_content=0.89, self_symmetry=0.84 -> map ~symmetric: uninformative
+
+all cells finished in 0.03 h

@@ -1,0 +1,8 @@
+encoder,grid,probes,row_major_hits,col_major_hits,verdict
+aimv2,16,8,5,0,CHECK MANUALLY
+clip,16,8,8,0,raster (row-major)
+siglip,14,8,8,0,raster (row-major)
+dinov2,16,8,8,0,raster (row-major)
+mae,14,8,8,0,raster (row-major)
+aimv2_random,16,8,8,0,raster (row-major)
+ceiling_pixels,16,8,8,0,raster (row-major)
